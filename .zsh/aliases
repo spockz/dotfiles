@@ -1,0 +1,283 @@
+# +++++++++++++++++++++++++++++++++++++ #
+# | One letter functions and aliases: | #
+# +++++++++++++++++++++++++++++++++++++ #
+# + Functions                         + #
+# | c ()                              | #
+# + Aliases                           + #
+# | s="src"                           | #
+# | f="find . -name"                  | #
+# | e="empty"                         | #
+# | o="open -a"                       | #
+# | m="mate -w"                       | #
+# | l="ls -"                          | #
+# | p="pwd" + Colors                  | #
+# +++++++++++++++++++++++++++++++++++++ #
+
+# ============= #
+# = Functions = #
+# ============= #
+
+function p () {
+  echo -n -e "$fg[green]"
+  pwd
+  echo -n -e "$fg[default]"
+}
+
+# show in which dir I am after a cd
+function c () {
+  cd $1
+  p
+  ls -AGF
+}
+
+# Make a new dir and move in it
+function mk () {
+  \mkdir $1
+  echo "Created folder: $fg[yellow]${1}$fg[white]"
+  cd $1
+  echo -n "Moved to: " && p
+}
+
+# Download a file with curl
+function get () {
+  cd ~/Downloads
+  curl -O $1
+  echo "\nDownload Complete : ${1}\n"
+  cd $OLDPWD
+}
+
+# Empty the Trash
+function empty () {
+ \rm -rf ~/.Trash/*
+ echo "\n\t$fg[yellow]Trash emptied successfully$fg[white]\n"
+}
+
+# Uninstall an application using AppZapper
+function zap () {
+  open -a AppZapper /Applications/"${1}".app
+}
+
+# open a manpage in preview
+function pman()
+{
+  man -t "${1}" | open -f -a /Applications/Preview.app
+}
+
+# reload dotfiles
+function src () {
+  if [ -f ~/.zsh/aliases ]  ; then source ~/.zsh/aliases  ; fi  # Source aliases
+}
+
+# Convert a markdown file in an HTML file
+function markdown() { 
+  /Applications/TextMate.app/Contents/SharedSupport/Support/bin/Markdown.pl $1 > $1.html
+}
+
+# look up a word
+dict () {
+  curl -s dict://dict.org/d:$1 | perl -ne 's/\r//; last if /^\.$/; print if /^151/../^250/' | more
+}
+lsdict() {
+  grep "$@" /usr/share/dict/words
+}
+
+# ============= #
+
+# =========== #
+# = Aliases = #
+# =========== #
+
+# reload the newest zsh files
+alias s="src"
+
+# df and du
+alias df="df -h"
+alias du="du -h -c | egrep 'total'"
+
+# which
+alias wi="which"
+alias wia="which -a"
+
+# top
+alias tu='top -o cpu' # cpu
+alias tm='top -o vsize' # memory
+
+# find
+alias f="find . -name"
+
+# Find out if a mysql server is running and show info about it
+alias find-mysql="netstat -ln | grep mysql"
+
+# History
+alias h="history"
+
+# Ping
+alias ping="ping -c 5"
+alias google="ping www.google.com"
+
+# Alternative to the tree command
+# source: http://www.geekology.co.za/blog/2009/07/displaying-a-text-based-file-and-folder-tree-on-the-command-line/
+alias tree2="ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/ /' -e 's/-/|/'"
+# make tree a little cooler looking.
+alias tree="tree -CAFa -I 'rhel.*.*.package|.git' --dirsfirst"
+
+# --------
+
+# ------------
+# - CLI OS X -
+# ------------
+
+# Empty the trash
+alias e="empty"
+
+# Open Apps from the command line and open files using Apps from the command line (OS X only!)
+alias o="open -a"
+alias o.="o \"Path Finder\" ."
+
+# Textmate
+alias m="mate"
+alias m.="m ."
+alias "m*"="m {*,.*}"
+alias "m**"="m .*"
+alias mp="pbpaste | mate"
+
+# Edit zsh config files with Textmate
+alias ea="m ~/.zsh/aliases"
+alias eb="m ~/.zsh"
+
+# ------------
+
+# ----------------------
+# - File Manipulation  -
+# -       and          -
+# - Folder Navigation  -
+# ----------------------
+
+# ls
+alias ls="ls -FG"
+alias l="ls -l"
+alias la="ls -A"
+alias ll="ls -Al"
+alias lsh="ls -sh"
+alias l.='ls -d .[^.]*'  # list hidden files only
+alias ll.='ll -d .[^.]*' # list hidden files only
+alias "l*"="ls *"
+alias dls="echo `ls -l | grep "^d" | awk '{ print $9 }' | tr -d "/"`"  # directory LS # TODO: Fix that alias
+alias cl="clear; p; l"
+
+# grep
+alias grep="grep --color=auto"
+alias egrep="egrep --color=auto"
+alias fgrep="fgrep --color=auto"
+alias -g "?"="| grep"
+alias -g "e?"="| egrep"
+alias -g "f?"="| fgrep"
+
+# rm, cp and mv
+alias rm="rm -iv"
+alias rf="rm -rf"
+alias mv="mv -iv"
+alias cp="cp -iv"
+alias cr="cp -R"
+
+# cd
+alias ..="c .."
+alias ...="c ../.."
+alias cdd="cd -"
+alias downloads="c ~/Downloads"
+alias documents="c ~/Documents"
+alias db="c ~/Dropbox"
+alias desktop="c ~/Desktop"
+alias temp="c ~/temp.junk"
+alias www="c ~/Sites"
+
+# cd to Sites subfolders
+alias cci="c ~/Sites/ci && l"
+alias crails="cd ~/Sites/Rails && l"
+
+# pwd
+alias pc="\pwd|pbcopy"
+
+# mkdir
+alias mkdir="mkdir -vp"
+
+# cal -m [month]
+alias cal="cal -m"
+
+# ----------------------
+
+# --------
+# - MAMP -
+# --------
+
+# MySQL CLI
+alias mysql="/Applications/MAMP/Library/bin/mysql -u root -p"
+
+# --------
+
+# ------------------
+# - Ruby and Rails -
+# ------------------
+
+# Colored ri
+alias ri="ri -f ansi -T"
+
+# rvm: ruby 1.9.1
+alias r91="rvm use 1.9.1"
+
+# rvm: system -> ruby 1.8.7
+alias r87="rvm use system"
+
+# rvm: info
+alias rinfo="rvm info"
+
+# rvm: list
+alias rls="rvm list"
+
+# alias rails="rails -d mysql" # Automatically use mysql as the default database server
+alias rss="ruby script/server"
+alias rsg="ruby script/generate"
+alias rsc="ruby script/console"
+
+# gem
+alias gemi="sudo gem install"
+alias gemu="sudo gem update"
+alias gems="gem search --remote"
+
+# ------------------
+
+# ---------
+# - Other -
+# ---------
+
+## awesome useless commands
+# watch star wars episode IV in ASCII art
+alias starwars='telnet towel.blinkenlights.nl'
+
+# Generate date string with current date and time
+alias now="rand|pbcopy"
+
+# generate a random number
+alias random="echo $(php -r 'echo mt_rand();')"
+
+# Subversion
+alias co="svn co"
+alias list="svn list --verbose"
+
+# TODO:: Review the git aliases
+
+# Git
+alias clone="git clone"
+
+# ---------
+
+# =========== #
+
+# ================== #
+# = Suffix Aliases = #
+# ================== #
+alias -s pdf="o preview"
+alias -s chm="o iChm"
+alias -s txt="mate"
+alias -s php="mate"
+# ================== #

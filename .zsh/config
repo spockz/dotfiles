@@ -1,0 +1,15 @@
+# Load completions for Ruby, Git, etc.
+autoload -U compinit
+compinit
+
+# Matches Case Insensitive for Lowercase
+zstyle ':completion:*' matcher-list 'm:{a-z}={A-Z}'
+
+# zstyle ':completion:*' format %d
+
+# Load Colors
+autoload colors
+colors
+
+# Nice Prompt
+PROMPT="%{$fg[red]%}→%{$fg[white]%} "

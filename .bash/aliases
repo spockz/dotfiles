@@ -1,0 +1,221 @@
+# +++++++++++++++++++++++++++++++++++++ #
+# | One letter functions and aliases: | #
+# +++++++++++++++++++++++++++++++++++++ #
+# + Functions                         + #
+# | c()                               | #
+# + Aliases                           + #
+# | s="src"                           | #
+# | f="find . -name"                  | #
+# | e="empty"                         | #
+# | o="open -a"                       | #
+# | m="mate -w"                       | #
+# | l="ls -"                          | #
+# | p="pwd"                           | #
+# +++++++++++++++++++++++++++++++++++++ #
+
+# =============
+# = Functions =
+# =============
+
+# show in which dir I am after a cd
+function c () {
+  cd $1
+  pwd
+}
+
+# Make a new dir and move in it
+function mk () {
+  \mkdir $1
+  echo "Created folder: ${1}"
+  cd $1
+  echo -n "Moved to: " && pwd
+}
+
+# Download a file with curl
+function get () {
+  cd ~/Downloads
+  curl -O $1
+  echo ""
+  echo "Download Complete : ${1}"
+  echo ""
+  cd $OLDPWD
+}
+
+# Empty the Trash
+function empty () {
+ \rm -rf ~/.Trash/*
+ echo ""
+ echo "Trash emptied successfully"
+ echo ""
+}
+
+
+# Uninstall an application using AppZapper
+function zap () {
+  open -a AppZapper /Applications/"${1}".app
+}
+
+# open a manpage in preview
+function pman()
+{
+   man -t "${1}" | open -f -a /Applications/Preview.app
+}
+
+# reload dotfiles
+function src () {
+  if [ -f ~/.bash/aliases ] ; then source ~/.bash/aliases ; fi  # Source aliases
+}
+
+
+# =============
+
+# ===========
+# = Aliases =
+# ===========
+
+# --------
+# - Bash -
+# --------
+
+# reload the newest bash files
+alias s="src"
+
+# clear bash history # TODO: add a reset function to that alias so that I can clear the history of an open terminal without the need to open a new terminal
+alias clean=">~/.bash_history && reset"
+
+# df and du
+alias df="df -h"
+alias du="du -h"
+
+# which
+alias wi="which"
+alias wia="which -a"
+
+# top
+alias tu='top -o cpu' # cpu
+alias tm='top -o vsize' # memory
+
+# find
+alias f="find . -name"
+
+# Find out if a mysql server is running and show info about it
+alias find-mysql="netstat -ln | grep mysql"
+
+# Alternative to the tree command
+# source: http://www.geekology.co.za/blog/2009/07/displaying-a-text-based-file-and-folder-tree-on-the-command-line/
+alias tree2="ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/ /' -e 's/-/|/'"
+
+# --------
+
+# ------------
+# - CLI OS X -
+# ------------
+
+# Empty the trash
+alias e="empty"
+
+# Open Apps from the command line and open files using Apps from the command line (OS X only!)
+alias o="open -a"
+
+# Textmate
+alias m="mate"
+alias m.="m ."
+alias mp="pbpaste | mate"
+
+# Edit bash config files with Textmate
+alias ea="m ~/.bash/aliases"
+alias eb="m ~/.bash"
+
+# ------------
+
+# ----------------------
+# - File Manipulation  -
+# -       and          -
+# - Folder Navigation  -
+# ----------------------
+
+# ls
+alias ls="ls -Gp"
+alias l="ls -l"
+alias la="ls -a"
+alias ll="ls -la"
+alias lsh="ls -sh"
+
+# rm, cp and mv
+alias rm="rm -iv"
+alias mv="mv -iv"
+alias cp="cp -iv"
+alias cr="cp -R"
+
+# cd
+alias ..="c .."
+alias ...="c ../.."
+alias downloads="c ~/Downloads"
+alias documents="c ~/Documents"
+alias db="c ~/Dropbox"
+alias desktop="c ~/Desktop"
+alias temp="c ~/temp.junk"
+alias www="c ~/Sites"
+
+# cd to Sites subfolders
+alias cci="c ~/Sites/ci && l"
+alias crails="cd ~/Sites/Rails && l"
+
+# pwd
+alias p="pwd"
+alias pc="p|pbcopy"
+
+# mkdir
+alias mkdir="mkdir -vp"
+
+# ----------------------
+
+# --------
+# - MAMP -
+# --------
+
+# MySQL CLI
+alias mysql="/Applications/MAMP/Library/bin/mysql -u root -p"
+
+# --------
+
+# ------------------
+# - Ruby and Rails -
+# ------------------
+
+# rvm: ruby 1.9.1
+alias r91="rvm use 1.9.1"
+
+# rvm: system -> ruby 1.8.7
+alias r87="rvm use system"
+
+# rvm: info
+alias rinfo="rvm info"
+
+# rvm: list
+alias rls="rvm list"
+
+# alias rails="rails -d mysql" # Automatically use mysql as the default database server
+alias rss="ruby script/server"
+alias rsg="ruby script/generate"
+alias rsc="ruby script/console"
+
+# ------------------
+
+# ---------
+# - Other -
+# ---------
+
+## awesome useless commands
+# watch star wars episode IV in ASCII art
+alias starwars='telnet towel.blinkenlights.nl'
+
+# Subversion
+alias co="svn co"
+alias list="svn list --verbose"
+
+# TODO:: Add git aliases
+
+# ---------
+
+# ===========

@@ -1,0 +1,12 @@
+# MacPorts Installer addition on 2009-09-15_at_19:14:20: adding an appropriate PATH variable for use with MacPorts.
+export PATH=/opt/local/bin:/opt/local/sbin:$PATH
+# /Users/aziz/bin: My Scripts
+export PATH=/Users/aziz/bin:$PATH
+# Ruby Version Manager (RVM)
+export PATH=$PATH:/Users/aziz/.gem/ruby/1.8/bin
+
+export CDPATH=$HOME
+
+export PAGER="less"
+export EDITOR="mate"
+export VISUAL=$EDITOR
