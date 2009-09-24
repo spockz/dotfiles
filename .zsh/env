@@ -10,3 +10,4 @@ export CDPATH=$HOME
 export PAGER="less"
 export EDITOR="mate"
 export VISUAL=$EDITOR
+export GIT_EDITOR="mate -w"
