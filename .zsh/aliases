@@ -66,8 +66,7 @@ function zap () {
 }
 
 # open a manpage in preview
-function pman ()
-{
+function pman () {
   man -t "${1}" | open -f -a /Applications/Preview.app
 }
 
@@ -139,7 +138,9 @@ function cr () {
   echo "\n\t$fg[green]Items copied successfully!!$fg[default]\n"
 }
 
-# ============= #
+# --------------------
+# - End of Functions -
+# ====================
 
 # =========== #
 # = Aliases = #
@@ -340,13 +341,19 @@ alias starwars='telnet towel.blinkenlights.nl'
 
 # ---------
 
-# =========== #
+# ------------------
+# - End of Aliases -
+# ==================
 
 # ================== #
 # = Suffix Aliases = #
 # ================== #
+
 alias -s pdf="o preview"
 alias -s chm="o iChm"
 alias -s txt="mate"
 alias -s php="mate"
-# ================== #
+
+# -------------------------
+# - End of Suffix Aliases -
+# =========================
