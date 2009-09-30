@@ -268,7 +268,7 @@ alias list="svn list --verbose"
 
 # Git
 alias clone="git clone"
-alias gitk="gitk --all &"
+alias gk="gitk --all &"
 alias status="git status"
 alias gls="git ls-files"
 alias gc="git commit"
