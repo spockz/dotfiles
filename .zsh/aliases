@@ -3,6 +3,8 @@
 # +++++++++++++++++++++++++++++++++++++ #
 # + Functions                         + #
 # | c ()                              | #
+# | p ()                              | #
+# | z ()                              | #
 # + Aliases                           + #
 # | s="src"                           | #
 # | f="find . -name"                  | #
@@ -18,38 +20,44 @@
 # ============= #
 
 function p () {
-  echo -n -e "$fg[green]"
+  echo -n -e "You're in: $fg[blue]$bg[blue]"
   pwd
-  echo -n -e "$fg[default]"
+  echo -n -e "$fg[default]$bg[default]\n"
 }
 
 # show in which dir I am after a cd
 function c () {
-  cd $1
+  \cd $1
   p
   ls -AGF
 }
 
 # Make a new dir and move in it
 function mk () {
-  \mkdir $1
-  echo "Created folder: $fg[yellow]${1}$fg[white]"
-  cd $1
-  echo -n "Moved to: " && p
+  \mkdir -p $*
+  echo "\n\tFolders created: $fg[green]${*}$fg[default]\n"
+}
+
+# Make a new dir and move in it
+function mkcd () {
+  \mkdir -p $1
+  echo "\n\tFolders created: $fg[green]${1}$fg[default]"
+  \cd $1
+  echo "\nMoved to: $fg[blue]$bg[blue]`pwd`$fg[default]$bg[default]\n"
 }
 
 # Download a file with curl
 function get () {
-  cd ~/Downloads
+  \cd ~/Downloads
   curl -O $1
   echo "\nDownload Complete : ${1}\n"
-  cd $OLDPWD
+  \cd $OLDPWD
 }
 
 # Empty the Trash
 function empty () {
  \rm -rf ~/.Trash/*
- echo "\n\t$fg[yellow]Trash emptied successfully$fg[white]\n"
+ echo "\n\t$fg[yellow]Trash emptied successfully$fg[default]\n"
 }
 
 # Uninstall an application using AppZapper
@@ -58,7 +66,7 @@ function zap () {
 }
 
 # open a manpage in preview
-function pman()
+function pman ()
 {
   man -t "${1}" | open -f -a /Applications/Preview.app
 }
@@ -66,6 +74,11 @@ function pman()
 # reload dotfiles
 function src () {
   if [ -f ~/.zsh/aliases ]  ; then source ~/.zsh/aliases  ; fi  # Source aliases
+}
+
+# Create a zip archive
+function z () {
+  zip -r $1 $1
 }
 
 # Convert a markdown file in an HTML file
@@ -77,8 +90,53 @@ function markdown() {
 dict () {
   curl -s dict://dict.org/d:$1 | perl -ne 's/\r//; last if /^\.$/; print if /^151/../^250/' | more
 }
-lsdict() {
+lsdict () {
   grep "$@" /usr/share/dict/words
+}
+
+# Create a backup of the file/folder passed as parameter and log the backup in the backup folder
+function bak () {
+  date_time=`now`
+  bak_dir=$HOME"/.my.backups/${1}.bak"
+  dir=$bak_dir'/'${date_time}
+  
+  \mkdir -p $dir
+  \cp -R $1 $dir
+  
+  # Log 1
+  if [ ! -e $HOME"/.my.backups/backups.log" ]
+  then
+    touch $HOME"/.my.backups/backups.log"
+    echo "Backups log\n(Arranged by backup date)\n" >> $HOME"/.my.backups/backups.log"
+  fi
+  echo "${date_time} :\t${dir}\t->\t`pwd`/${1}" >> $HOME"/.my.backups/backups.log"
+  
+  # Log 2
+  if [ ! -e $bak_dir"/PATH_OF_ORIGINAL_FILE_OR_FOLDER" ]
+  then
+    touch $bak_dir"/PATH_OF_ORIGINAL_FILE_OR_FOLDER"
+    echo "This file contains the path the original file/folder for each backup\n(Arranged by backup date)\n" >> $bak_dir"/PATH_OF_ORIGINAL_FILE_OR_FOLDER"
+  fi
+  echo "${date_time} :\t`pwd`/${1}" >> $bak_dir"/PATH_OF_ORIGINAL_FILE_OR_FOLDER"
+  
+  # Feedback
+  echo "\n\t$fg[green]Backup Complete$fg[default]\n"
+}
+
+# rm -rf with nice feedback
+function rf () {
+  echo "\n\t$fg[red]Permanently removing ${*}...$fg[default]\n"
+  
+  \rm -rf $*
+  echo "\n\t$fg[yellow]Items deleted: ${*}\n"
+}
+
+# cp -R with nice feedback
+function cr () {
+  echo "\n\t$fg[yellow]Copying...\n"
+  
+  \cp -R $*
+  echo "\n\t$fg[green]Items copied successfully!!$fg[default]\n"
 }
 
 # ============= #
@@ -111,15 +169,18 @@ alias find-mysql="netstat -ln | grep mysql"
 # History
 alias h="history"
 
+# less
+alias -g ":l"=" | less"
+
 # Ping
 alias ping="ping -c 5"
 alias google="ping www.google.com"
 
-# Alternative to the tree command
-# source: http://www.geekology.co.za/blog/2009/07/displaying-a-text-based-file-and-folder-tree-on-the-command-line/
-alias tree2="ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/ /' -e 's/-/|/'"
 # make tree a little cooler looking.
 alias tree="tree -CAFa -I 'rhel.*.*.package|.git' --dirsfirst"
+
+# alternative to tree
+alias tc="ls * | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/ /' -e 's/-/|/' :c ; ls -R | grep ":$" | sed -e 's/:$//' -e 's/[^-][^\/]*\//--/g' -e 's/^/ /' -e 's/-/|/'"
 
 # --------
 
@@ -130,16 +191,21 @@ alias tree="tree -CAFa -I 'rhel.*.*.package|.git' --dirsfirst"
 # Empty the trash
 alias e="empty"
 
+# pbcopy and pbpaste
+alias -g ":c"=" | pbcopy"
+alias -g ":p"="pbpaste"
+
 # Open Apps from the command line and open files using Apps from the command line (OS X only!)
 alias o="open -a"
 alias o.="o \"Path Finder\" ."
 
 # Textmate
+alias -g ":m"=" | mate"
 alias m="mate"
 alias m.="m ."
 alias "m*"="m {*,.*}"
 alias "m**"="m .*"
-alias mp="pbpaste | mate"
+alias mp=":p :m"
 
 # Edit zsh config files with Textmate
 alias ea="m ~/.zsh/aliases"
@@ -162,7 +228,7 @@ alias lsh="ls -sh"
 alias l.='ls -d .[^.]*'  # list hidden files only
 alias ll.='ll -d .[^.]*' # list hidden files only
 alias "l*"="ls *"
-alias dls="echo `ls -l | grep "^d" | awk '{ print $9 }' | tr -d "/"`"  # directory LS # TODO: Fix that alias
+# alias dls="echo `ls -l | grep "^d" | awk '{ print $9 }' | tr -d "/"`"  # directory LS # TODO: Fix that alias
 alias cl="clear; p; l"
 
 # grep
@@ -175,25 +241,25 @@ alias -g "f?"="| fgrep"
 
 # rm, cp and mv
 alias rm="rm -iv"
-alias rf="rm -rf"
 alias mv="mv -iv"
 alias cp="cp -iv"
-alias cr="cp -R"
 
 # cd
+alias cd="cd && ls"
 alias ..="c .."
 alias ...="c ../.."
-alias cdd="cd -"
+alias cdd="c -"
 alias downloads="c ~/Downloads"
 alias documents="c ~/Documents"
 alias db="c ~/Dropbox"
 alias desktop="c ~/Desktop"
 alias temp="c ~/temp.junk"
 alias www="c ~/Sites"
+alias bin="c ~/bin"
 
 # cd to Sites subfolders
-alias cci="c ~/Sites/ci && l"
-alias crails="cd ~/Sites/Rails && l"
+alias cci="c ~/Sites/ci"
+alias crails="c ~/Sites/Rails"
 
 # pwd
 alias pc="\pwd|pbcopy"
@@ -250,15 +316,8 @@ alias gems="gem search --remote"
 # - Other -
 # ---------
 
-## awesome useless commands
-# watch star wars episode IV in ASCII art
-alias starwars='telnet towel.blinkenlights.nl'
-
-# Generate date string with current date and time
-alias now="rand|pbcopy"
-
-# generate a random number
-alias random="echo $(php -r 'echo mt_rand();')"
+# Validate PHP from the Command Line
+alias vp="php -v && php -d display_errors=on"
 
 # Subversion
 alias co="svn co"
@@ -274,6 +333,10 @@ alias gls="git ls-files"
 alias gc="git commit"
 alias gb="git branch --color"
 alias gp="git push"
+
+## awesome useless commands
+# watch star wars episode IV in ASCII art
+alias starwars='telnet towel.blinkenlights.nl'
 
 # ---------
 
