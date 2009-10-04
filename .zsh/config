@@ -1,3 +1,6 @@
+# Activate zsh correction
+setopt correct
+
 # Load completions for Ruby, Git, etc.
 autoload -U compinit
 compinit

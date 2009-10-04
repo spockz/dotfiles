@@ -5,9 +5,9 @@ export PATH=/Users/aziz/bin:$PATH
 # Ruby Version Manager (RVM)
 export PATH=$PATH:/Users/aziz/.gem/ruby/1.8/bin
 
-export CDPATH=$HOME
+CDPATH=$HOME
 
-export PAGER="less"
-export EDITOR="mate"
-export VISUAL=$EDITOR
-export GIT_EDITOR="mate -w"
+PAGER="less"
+EDITOR="mate"
+VISUAL=$EDITOR
+GIT_EDITOR="mate -w"

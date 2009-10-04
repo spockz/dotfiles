@@ -19,69 +19,69 @@
 # = Functions = #
 # ============= #
 
-function p () {
+p () {
   echo -n -e "You're in: $fg[blue]$bg[blue]"
   pwd
   echo -n -e "$fg[default]$bg[default]\n"
 }
 
 # show in which dir I am after a cd
-function c () {
-  \cd $1
-  p
+c () {
+  builtin cd "$@" &&
+  p &&
   ls -AGF
 }
 
 # Make a new dir and move in it
-function mk () {
-  \mkdir -p $*
+mk () {
+  builtin mkdir -p $*
   echo "\n\tFolders created: $fg[green]${*}$fg[default]\n"
 }
 
 # Make a new dir and move in it
-function mkcd () {
-  \mkdir -p $1
-  echo "\n\tFolders created: $fg[green]${1}$fg[default]"
-  \cd $1
+mkcd () {
+  builtin mkdir -p $1 &&
+  echo "\n\tFolders created: $fg[green]${1}$fg[default]" &&
+  builtin cd $1 &&
   echo "\nMoved to: $fg[blue]$bg[blue]`pwd`$fg[default]$bg[default]\n"
 }
 
 # Download a file with curl
-function get () {
-  \cd ~/Downloads
-  curl -O $1
-  echo "\nDownload Complete : ${1}\n"
-  \cd $OLDPWD
+get () {
+  builtin cd ~/Downloads
+  curl -O $1 &&
+  echo "\nDownload Complete : ${1}\n" &&
+  builtin cd $OLDPWD
 }
 
 # Empty the Trash
-function empty () {
- \rm -rf ~/.Trash/*
+empty () {
+ builtin rm -rf ~/.Trash/* &&
  echo "\n\t$fg[yellow]Trash emptied successfully$fg[default]\n"
 }
 
 # Uninstall an application using AppZapper
-function zap () {
+zap () {
   open -a AppZapper /Applications/"${1}".app
 }
 
 # open a manpage in preview
-function pman () {
+pman () {
   man -t "${1}" | open -f -a /Applications/Preview.app
 }
 
 # reload dotfiles
-function src () {
+src () {
   if [ -f ~/.zsh/aliases ]  ; then source ~/.zsh/aliases  ; fi  # Source aliases
 }
 
 # Create a zip archive
-function z () {
+z () {
   zip -r $1 $1
 }
 
 # Convert a markdown file in an HTML file
-function markdown() { 
+markdown() { 
   /Applications/TextMate.app/Contents/SharedSupport/Support/bin/Markdown.pl $1 > $1.html
 }
 
@@ -94,13 +94,13 @@ lsdict () {
 }
 
 # Create a backup of the file/folder passed as parameter and log the backup in the backup folder
-function bak () {
+bak () {
   date_time=`now`
   bak_dir=$HOME"/.my.backups/${1}.bak"
   dir=$bak_dir'/'${date_time}
   
-  \mkdir -p $dir
-  \cp -R $1 $dir
+  builtin mkdir -p $dir
+  builtin cp -R $1 $dir
   
   # Log 1
   if [ ! -e $HOME"/.my.backups/backups.log" ]
@@ -123,19 +123,24 @@ function bak () {
 }
 
 # rm -rf with nice feedback
-function rf () {
+rf () {
   echo "\n\t$fg[red]Permanently removing ${*}...$fg[default]\n"
   
-  \rm -rf $*
+  builtin rm -rf $*
   echo "\n\t$fg[yellow]Items deleted: ${*}\n"
 }
 
 # cp -R with nice feedback
-function cr () {
+cr () {
   echo "\n\t$fg[yellow]Copying...\n"
   
-  \cp -R $*
+  builtin cp -R $*
   echo "\n\t$fg[green]Items copied successfully!!$fg[default]\n"
+}
+
+# return the length of the string passed as argument
+count () {
+  echo ${#1}
 }
 
 # --------------------
@@ -246,7 +251,6 @@ alias mv="mv -iv"
 alias cp="cp -iv"
 
 # cd
-alias cd="cd && ls"
 alias ..="c .."
 alias ...="c ../.."
 alias cdd="c -"
@@ -263,7 +267,7 @@ alias cci="c ~/Sites/ci"
 alias crails="c ~/Sites/Rails"
 
 # pwd
-alias pc="\pwd|pbcopy"
+alias pc="builtin pwd|pbcopy"
 
 # mkdir
 alias mkdir="mkdir -vp"
