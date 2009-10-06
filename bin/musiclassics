@@ -1,51 +1,106 @@
 #!/usr/bin/env php -q
 <?php
 // Working directory
-$dir = (empty($argv[1])) ? '.' : './'.$argv[1];
+$dirs = (count($argv) == 1) ? '.' : $argv;
 
 // Allowed extensions
-$allowed_extensions = array(
-                        'wma'
-                      );
-                      
-if (is_dir($dir))
+$allowed_extensions = 	array(
+							'wma',
+							'wmv'
+						);
+if (is_array($dirs))
 {
-  if ($handle = opendir($dir))
-  {
-    while (($file = readdir($handle)) !== FALSE) {
-      
-      if (preg_match('/^\d+-\d+_\d+\.wma$/',$file) || !is_file($file) || !preg_match('/^\d+/',$file))
-         continue;
-       
-       // directory name
-       $dir_name = explode('/',realpath($file));
-       $previous_to_last = count($dir_name) - 2;
-       $dir_name = $dir_name[$previous_to_last];
-       
-       // Extension
-       $extension = explode('.',$file);
-       $extension = (count($extension) > 1) ? end($extension) : $extension = '';
-       
-       // extension verification
-       if (!in_array($extension, $allowed_extensions))
-         continue;
-       
-       // put new file names in $match array
-       preg_match('/^\d+/',$file,$matches);
-       
-       if (empty($extension))
-       {
-         if (file_exists($dir_name.'_'.$matches[0].'.wma'))
-           continue;
-         rename($file, $dir_name.'_'.$matches[0].'.wma');
-       }
-       else
-       {
-         if (file_exists($dir_name.'_'.$matches[0].'.'.$extension))
-           continue;
-         rename($file, $dir_name.'_'.$matches[0].'.'.$extension);
-       }
-    }
-  }
+	foreach ($dirs as $dir)
+	{
+		if ($dir === $argv[0])
+			continue;
+		if (is_dir($dir))
+		{
+			$dir = realpath('.').'/'.$dir;
+			chdir($dir);
+			if ($handle = opendir($dir))
+			{
+				while (($file = readdir($handle)) !== FALSE) {
+					if (preg_match('/^\d+-\d+_\d+\.wm[av]$/',$file) || !preg_match('/^\d+/',$file))
+						continue;
+				
+					// directory name
+					$dir_name = explode('/',realpath($file));
+					$previous_to_last = count($dir_name) - 2;
+					$dir_name = $dir_name[$previous_to_last];
+				
+					// Extension
+					$extension = explode('.',$file);
+					$extension = (count($extension) > 1) ? end($extension) : $extension = '';
+				
+					// extension verification
+					if (!in_array($extension, $allowed_extensions))
+						continue;
+				
+					// put new file names in $match array
+					preg_match('/^\d+/',$file,$matches);
+				
+					if (empty($extension))
+					{
+						if (file_exists($dir_name.'_'.$matches[0].'.wma'))
+							continue;
+						rename($file, $dir_name.'_'.$matches[0].'.wma');
+					}
+					else
+					{
+						if (file_exists($dir_name.'_'.$matches[0].'.'.$extension))
+							continue;
+						rename($file, $dir_name.'_'.$matches[0].'.'.$extension);
+					}
+				}
+				closedir($handle);
+			}
+			chdir('..');
+		}
+	}
+}
+elseif (is_string($dirs))
+{
+	if (is_dir($dirs))
+	{
+		if ($handle = opendir($dirs))
+		{
+			while (($file = readdir($handle)) !== FALSE) {
+				if (preg_match('/^\d+-\d+_\d+\.wm[av]$/',$file) || !preg_match('/^\d+/',$file))
+					continue;
+			
+				// directory name
+				$dir_name = explode('/',realpath($file));
+				$previous_to_last = count($dir_name) - 2;
+				$dir_name = $dir_name[$previous_to_last];
+			
+				// Extension
+				$extension = explode('.',$file);
+				$extension = (count($extension) > 1) ? end($extension) : $extension = '';
+			
+				// extension verification
+				if (!in_array($extension, $allowed_extensions))
+					continue;
+			
+				// put new file names in $match array
+				preg_match('/^\d+/',$file,$matches);
+			
+				if (empty($extension))
+				{
+					if (file_exists($dir_name.'_'.$matches[0].'.wma'))
+						continue;
+					rename($file, $dir_name.'_'.$matches[0].'.wma');
+				}
+				else
+				{
+					if (file_exists($dir_name.'_'.$matches[0].'.'.$extension))
+						continue;
+					rename($file, $dir_name.'_'.$matches[0].'.'.$extension);
+				}
+			}
+			closedir($handle);
+		}
+		chdir('..');
+	}
 }
 ?>
